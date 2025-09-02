@@ -36,7 +36,7 @@ adapter for the particular site) -> website\webarchieve page -> data -> data fil
 
 here is an example of the search window:
 
-![alt text]('../image_for_readme.png')
+![Search Window](image_for_readme.png)
 
 
 
