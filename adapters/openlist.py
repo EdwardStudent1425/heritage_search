@@ -12,6 +12,8 @@ class OpenlistAdapter:
         "searches the open lists of repressed people"
 
         all_cards = []
+        headers = []
+
 
         params = {
             'olsearch-name': '',
@@ -103,11 +105,23 @@ class OpenlistAdapter:
             if not table:
                 break
 
-            thead = table.find('thead')
-            # tr = thead.find('tr')
-            td_list = thead.find_all('td')
-            headers = [td.get_text(strip=True) for td in td_list]
+            # thead = table.find('thead')
+            
 
+            if not headers:
+                thead = table.find('thead')
+                if thead:
+                    for td in thead.find_all('td'):
+                        # знайдемо span, якщо є
+                        span = td.find('span')
+                        if span:
+                            text = span.get_text(strip=True)
+                        else:
+                            # інакше беремо просто текст з td
+                            text = td.get_text(strip=True)
+                        headers.append(text)
+
+            
             tbody = table.find('tbody')
             tr_list = tbody.find_all('tr')
             if not tr_list or len(tr_list) == 0:
@@ -116,23 +130,29 @@ class OpenlistAdapter:
             for tr in tr_list:
                 if not tr:
                     break
-                card = []
+                row_data = {}
                 td_list = tr.find_all('td')
-                for td in td_list:
-                    # if there is the tag <a>, pull out the piece of text and href
+                
+                for i, td in enumerate(td_list):
+                    header = headers[i] if i < len(headers) else f"Field_{i}"
+
                     a_tag = td.find('a')
                     if a_tag:
                         name_text = a_tag.get_text(strip=True)
                         href = a_tag.get('href', '')
                         full_link = f"https://ua.openlist.wiki{href}"
-                        card.append(name_text)
-                        card.append(full_link)
+
+                        row_data[header] = name_text
+                        row_data[f"{header}_посилання"] = full_link
                     else:
                         text = td.get_text(strip=True)
-                        card.append(text if text else '-')
+                        row_data[header] = text if text else '-'
 
-                if card:
-                    all_cards.append(card)
+                if row_data:
+                    all_cards.append(row_data)
+
 
             page += 1
+        print(headers)
+        print(';;;;;;')
         return all_cards

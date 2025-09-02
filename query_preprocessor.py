@@ -7,8 +7,44 @@ class InputQuery:
         """
         check whether a query has appropriate keys
         """
-        base_keys = ['surname', 'name', 'patronymic', 'birth_year',
-                     'death_year', 'country', 'region', 'birth_settlement']
+        base_keys = [
+            'archive_case_number',
+            'arrest_max',
+            'arrest_min',
+            'birth_max',
+            'birth_min',
+            'birth_region',
+            'birth_year',
+            'birthplace',
+            'body',
+            'burial_city',
+            'burial_place',
+            'burial_region',
+            'burial_village',
+            'categories',
+            'conviction_max',
+            'conviction_min',
+            'conviction_org',
+            'death_max',
+            'death_min',
+            'death_year',
+            'deathplace',
+            'detentionplace',
+            'execution_max',
+            'execution_min',
+            'indictment',
+            'liveplace',
+            'name',
+            'nationality',
+            'patronymic',
+            'place_birth',
+            'profession',
+            'release_max',
+            'release_min',
+            'sentence',
+            'social',
+            'surname'
+        ]
         query = dict()
 
         # is it necessary if i have a stable gui

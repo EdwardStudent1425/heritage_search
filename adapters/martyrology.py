@@ -21,6 +21,7 @@ class MartyrologyAdapter(ArchiveAdapter):
         res_url = 'https://martyrology.org.ua/result'
         page = 1
         all_cards = []
+        headers = []
         max_page = 0
         params = {
             'SearchForm[surnameUA]':'',
@@ -77,6 +78,22 @@ class MartyrologyAdapter(ArchiveAdapter):
             if not table:
                 break  
 
+            thead = table.find('thead')
+            if thead:
+                header_row = thead.find('tr')
+                if header_row:
+                    headers.clear()
+                    th_list = header_row.find_all('th')
+                    for i, th in enumerate(th_list):
+                        text = ' '.join(th.stripped_strings).replace('\n', ' ').strip()
+                        if i == 0:
+                            # Розбити перший заголовок вручну
+                            split_headers = ["Прізвище, Ім'я, По батькові"]
+                            headers.extend(split_headers)
+                        else:
+                            headers.append(text)
+
+
             tbody = table.find('tbody')
             tr_list = tbody.find_all('tr')
             if not tr_list or len(tr_list) == 0:
@@ -87,14 +104,14 @@ class MartyrologyAdapter(ArchiveAdapter):
 
             for tr in tr_list:
                 if not tr:
-                    print("Stopped: No rows found on this page")
-                    break
-                card = []
+                    continue
                 td_list = tr.find_all('td')
-                for td in td_list:
-                    text = td.get_text(strip=True)
-                    card.append(text if text else '-')
-                all_cards.append(card)
+                row_data = [td.get_text(strip=True) if td.get_text(strip=True) else '-' for td in td_list]
+                
+                min_len = min(len(headers), len(row_data))
+                card_dict = dict(zip(headers[:min_len], row_data[:min_len]))
+                all_cards.append(card_dict)
+
 
             print(f"Page {page} rows: {len(tr_list)}")
             if page >= max_page:

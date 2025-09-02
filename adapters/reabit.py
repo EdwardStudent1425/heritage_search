@@ -74,6 +74,7 @@ class ReabitAdapter(ArchiveAdapter):
         last_page = (last_start // 50) + 1
         print(f"Total pages: {last_page}")
 
+
         # going through each page
         for page in range(1, last_page + 1):
             start_param = (page - 1) * 50
@@ -88,6 +89,25 @@ class ReabitAdapter(ArchiveAdapter):
             if not table:
                 print("No table found, stopping.")
                 break
+
+            # знайти <thead> у таблиці
+            thead = table.find('thead')
+            headers = []
+
+            if thead:
+                header_row = thead.find('tr')
+                if header_row:
+                    for th in header_row.find_all('th'):
+                        button = th.find('button')
+                        if button:
+                            text = button.get_text(separator=' ', strip=True)
+                        else:
+                            text = th.get_text(strip=True)
+                        text = text.replace('\xa0', ' ').strip()
+                        headers.append(text)
+
+            print("Заголовки таблиці:", headers)
+
 
             tbody = table.find('tbody')
             if not tbody:
@@ -117,7 +137,12 @@ class ReabitAdapter(ArchiveAdapter):
                     card.extend(text_data)
                     card.append(link or '-')
 
-                if card:
-                    all_cards.append(card)
+                row_dict = {}
+                for i, header in enumerate(headers):
+                    row_dict[header] = text_data[i] if i < len(text_data) else ''
+
+                row_dict['Посилання'] = link or '-'
+
+                all_cards.append(row_dict)
 
         return all_cards

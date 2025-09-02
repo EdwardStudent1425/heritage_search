@@ -6,9 +6,9 @@ class SearchKernel:
 
     def __init__(self):
         self.parsers = [
+            MartyrologyAdapter(),
             OpenlistAdapter(),
-            MartyrologyAdapter()
-            # ReabitAdapter(),
+            ReabitAdapter()
             # HolodomorVictimsAdapter
         ]
     
